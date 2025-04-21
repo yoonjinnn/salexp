@@ -3,8 +3,8 @@ from .models import *
 
 # Register your models here
 
-@admin.register(GenreTag)
-class GenreTagAdmin(admin.ModelAdmin):
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
     fieldsets = [
         ('장르명', {'fields': ['genre_name']}),
     ]

@@ -6,32 +6,32 @@ import datetime
 
 
 # Create your models here.
-class GenreTag(models.Model):
-    genre_name = models.CharField(default='', verbose_name='장르명', max_length=50)
+class Genre(models.Model):
+    genre_name = models.CharField(default='', verbose_name='장르명', max_length=50, unique=True)
     
     def __str__(self):
         return self.genre_name
 
 
 class Language(models.Model):
-    language = models.CharField(default='', verbose_name='언어', max_length=50)
+    language = models.CharField(default='', verbose_name='언어', max_length=50, unique=True)
 
     def __str__(self):
         return self.language
 
 
 class Game(models.Model):
-    game_name = models.CharField(verbose_name='게임명', max_length=50)
+    game_name = models.CharField(verbose_name='게임명', max_length=50, unique=True)
     original_price = models.IntegerField(verbose_name='원가', default=0)
     discount_price = models.IntegerField(verbose_name='현재가격', default=0)
-    discount_startdate = models.DateTimeField(blank=True, default=timezone.now(), verbose_name='할인시작일')
+    discount_startdate = models.DateTimeField(blank=True, default=timezone.now, verbose_name='할인시작일')
     discount_enddate = models.DateTimeField(blank=True, verbose_name='할인종료일')
-    genre = models.ManyToManyField('GenreTag', default='', blank=True, through='GameGenreTag', verbose_name='장르')
+    genre = models.ManyToManyField('Genre', through='GameGenre', verbose_name='장르')
     release_date = models.DateTimeField(blank=True, verbose_name='발매일')
     maker = models.CharField(verbose_name='개발사', max_length=100)
-    player_number = models.IntegerField(verbose_name='플레이 인원수', default=1)
+    player_number = models.CharField(verbose_name='플레이 인원수', default=1)
     product_type = models.BooleanField(verbose_name='상품유형(실물여부)', default=False)
-    game_language = models.ManyToManyField('Language', through='GameLanguage', default='', verbose_name='대응언어')
+    game_language = models.ManyToManyField('Language', through='GameLanguage', verbose_name='대응언어')
     game_image_url = models.URLField(max_length=200, default='', verbose_name='이미지URL')
     game_url = models.URLField(max_length=100, default='', verbose_name='URL')
     
@@ -81,11 +81,11 @@ class Game(models.Model):
 
 
 # ManyToManyField에 의해 사용될 중간 테이블 - 태그별 조회 시 사용
-class GameGenreTag(models.Model):
+class GameGenre(models.Model):
     class Meta:
-        db_table = 'game_genretag'
+        db_table = 'game_genre'
     game = models.ForeignKey('Game', on_delete=models.CASCADE)
-    genretag = models.ForeignKey('GenreTag', on_delete=models.CASCADE)
+    genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
     
 
 class GameLanguage(models.Model):
