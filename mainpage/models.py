@@ -23,18 +23,19 @@ class Language(models.Model):
 class Game(models.Model):
     game_name = models.CharField(verbose_name='게임명', max_length=50, unique=True)
     original_price = models.IntegerField(verbose_name='원가', default=0)
-    discount_price = models.IntegerField(verbose_name='현재가격', default=0)
-    discount_startdate = models.DateTimeField(blank=True, default=timezone.now, verbose_name='할인시작일')
-    discount_enddate = models.DateTimeField(blank=True, verbose_name='할인종료일')
+    discount_price = models.IntegerField(verbose_name='현재가격', default=original_price)
+    discount_startdate = models.DateTimeField(blank=True, null=True, default=None, verbose_name='할인시작일')
+    discount_enddate = models.DateTimeField(blank=True, null=True, default=None, verbose_name='할인종료일')
     genre = models.ManyToManyField('Genre', through='GameGenre', verbose_name='장르')
-    release_date = models.DateTimeField(blank=True, verbose_name='발매일')
+    release_date = models.DateTimeField(blank=True, default=timezone.now, verbose_name='발매일')
     maker = models.CharField(verbose_name='개발사', max_length=100)
     player_number = models.CharField(verbose_name='플레이 인원수', default=1)
-    product_type = models.BooleanField(verbose_name='상품유형(실물여부)', default=False)
+    product_type = models.CharField(verbose_name='상품유형', default='')
     game_language = models.ManyToManyField('Language', through='GameLanguage', verbose_name='대응언어')
     game_image_url = models.URLField(max_length=200, default='', verbose_name='이미지URL')
     game_url = models.URLField(max_length=100, default='', verbose_name='URL')
-    
+    collect_date = models.DateTimeField(auto_now_add=True, verbose_name='데이터 수집일')
+
     @admin.display(description='장르')
     def get_genres(self):
         return ", ".join([g.genre_name for g in self.genre.all()])
@@ -45,10 +46,9 @@ class Game(models.Model):
     
     @admin.display(description='종료까지')
     def get_discount_term(self):
-        if self.discount_enddate >= timezone.now():
+        if self.discount_enddate is not None and (self.discount_enddate >= timezone.now()):
             return f'D-{(self.discount_enddate.date() - timezone.now().date()).days}'
-        else:
-            return f'-'
+        return f'-'
 
     @admin.display(description='할인율')
     def get_discount_percentage(self):

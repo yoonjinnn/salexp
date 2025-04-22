@@ -1,0 +1,47 @@
+from rest_framework import serializers
+from mainpage.models import *
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.validators import UniqueTogetherValidator
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ['genre_name']
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ['language']
+
+
+class GameSerializer(serializers.ModelSerializer):
+    genre = GenreSerializer(many=True, read_only=True)
+    game_language = LanguageSerializer(many=True, read_only=True)
+    class Meta:
+        model = Game
+        fields = ['id', 'game_name', 'get_discount_percentage', 'get_discount_term', 'genre', 'game_language',]
+
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "두 패스워드가 일치하지 않습니다."})
+        return attrs
+
+    def create(self, validated_data):
+        user = User.objects.create(username=validated_data['username'])
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+    class Meta:
+        # User 내에 username의 중복확인 코드가 들어가 있음
+        model = User
+        fields = ['username', 'password', 'password2']
