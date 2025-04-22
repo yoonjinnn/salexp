@@ -27,8 +27,8 @@ def load_data():
             "game_url": "링크"
         })
 
-        df["장르"] = df["장르"].fillna("").apply(lambda x: [g.strip() for g in x.split(",")] if x else [])
-        df["언어"] = df["언어"].fillna("").apply(lambda x: [l.strip() for l in x.split(",")] if x else [])
+        # df["장르"] = df["장르"].fillna("").apply(lambda x: [g.strip() for g in x.split(",")] if x else [])
+        # df["언어"] = df["언어"].fillna("").apply(lambda x: [l.strip() for l in x.split(",")] if x else [])
         df["할인율"] = ((df["정가"] - df["할인가"]) / df["정가"] * 100).round(2)
         return df
     else:

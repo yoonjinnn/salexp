@@ -2,9 +2,8 @@ from django.shortcuts import render
 from mainpage.models import *
 from rest_framework import generics
 from .serializers import *
-from rest_framework import generics, permissions
+from rest_framework import generics
 from .permissions import *
-
 
 # Create your views here.
 class GameList(generics.ListCreateAPIView):
@@ -22,12 +21,12 @@ class GameDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GenreList(generics.ListAPIView):
-    queryset = Genre.objects.all()
+    queryset = Genres.objects.all()
     serializer_class = GenreSerializer
 
 
 class LanguageList(generics.ListAPIView):
-    queryset = Language.objects.all()
+    queryset = Languages.objects.all()
     serializer_class = LanguageSerializer
 
 

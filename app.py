@@ -4,8 +4,11 @@ import pandas as pd
 import requests
 import sqlite3 # sqlite DB 사용 시
 
+
 # API URL 중앙 설정
 API_URL = "http://localhost:8000/api/games/"
+API_GENRE_URL = "http://localhost:8000/api/genres/"
+API_LANG_URL = "http://localhost:8000/api/languages/"
 
 # sqlite 연결 함수
 def load_data_from_sqlite(db_path="db.sqlite3"):
@@ -42,9 +45,9 @@ def load_data():
             "game_url": "링크"
         })
 
-        # 장르와 언어를 리스트로 변환
-        df["장르"] = df["장르"].fillna("").apply(lambda x: [g.strip() for g in x.split(",")] if x else [])
-        df["언어"] = df["언어"].fillna("").apply(lambda x: [l.strip() for l in x.split(",")] if x else [])
+        # # 장르와 언어를 리스트로 변환
+        # df["장르"] = df["장르"].fillna("").apply(lambda x: [g.strip() for g in x.split(",")] if x else [])
+        # df["언어"] = df["언어"].fillna("").apply(lambda x: [l.strip() for l in x.split(",")] if x else [])
 
         # 할인율 계산 필드 추가
         df["할인율"] = ((df["정가"] - df["할인가"]) / df["정가"] * 100).round(2)
@@ -53,9 +56,28 @@ def load_data():
         st.error("게임 데이터를 불러오지 못했습니다.")
         return pd.DataFrame()
 
+@st.cache_data
+def load_genres():
+    response = requests.get(API_GENRE_URL)
+    if response.status_code == 200:
+        data = response.json()
+        return [g.get('genre_name') for g in data]
+    st.error("장르 데이터를 불러오지 못했습니다.")
+
+@st.cache_data
+def load_languages():
+    response = requests.get(API_LANG_URL)
+    if response.status_code == 200:
+        data = response.json()
+        return [l.get('language') for l in data]
+    st.error("언어 데이터를 불러오지 못했습니다.")
+
+
 # 데이터 로딩
 df = load_data()
 # df = load_data_from_sqlite() # sqlite DB 사용 시
+genre_list = load_genres()
+lang_list = load_languages()
 
 # 페이지 헤더
 st.title("🎮 닌텐도 게임 가격 비교 및 검색")
@@ -74,13 +96,13 @@ with st.container():
     # 두 번째 줄: 장르 + 제작사 + 언어
     row2_col1, row2_col2, row2_col3 = st.columns([2, 2, 2])
     with row2_col1:
-        genre_options = sorted({g for genres in df["장르"] for g in genres})
+        genre_options = sorted(genre_list)
         selected_genre = st.multiselect("장르 선택", options=genre_options)
     with row2_col2:
         maker_options = sorted(df["메이커"].dropna().unique())
         selected_maker = st.multiselect("제작사 선택", options=maker_options)
     with row2_col3:
-        language_options = sorted({l for langs in df["언어"] for l in langs})
+        language_options = sorted(lang_list)
         selected_language = st.multiselect("지원 언어 선택", options=language_options)
 
 # 필터 적용

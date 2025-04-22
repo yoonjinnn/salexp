@@ -3,7 +3,7 @@ from .models import *
 
 # Register your models here
 
-@admin.register(Genre)
+@admin.register(Genres)
 class GenreAdmin(admin.ModelAdmin):
     fieldsets = [
         ('장르명', {'fields': ['genre_name']}),
@@ -16,7 +16,7 @@ class GenreInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(Language)
+@admin.register(Languages)
 class LanguageAdmin(admin.ModelAdmin):
     fieldsets = [
         ('언어명', {'fields': ['language']}),

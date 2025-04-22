@@ -7,23 +7,22 @@ from rest_framework.validators import UniqueTogetherValidator
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Genre
+        model = Genres
         fields = ['genre_name']
 
 
 class LanguageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Language
+        model = Languages
         fields = ['language']
 
 
 class GameSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True)
-    game_language = LanguageSerializer(many=True, read_only=True)
+    genre = serializers.StringRelatedField(many=True, read_only=True)
+    game_language = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Game
-        fields = ['id', 'game_name', 'get_discount_percentage', 'get_discount_term', 'genre', 'game_language',]
-
+        fields = '__all__'
 
 
 class RegisterSerializer(serializers.ModelSerializer):

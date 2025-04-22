@@ -12,11 +12,11 @@ from django.contrib.auth.forms import UserCreationForm
 def add_game(data):
     # Add data if data not exists
     for genre in data[7].replace(',', '').split():
-        if not Genre.objects.filter(genre_name=genre):
-            Genre.objects.create(genre_name=genre)
+        if not Genres.objects.filter(genre_name=genre):
+            Genres.objects.create(genre_name=genre)
     for lang in data[12].replace(',', '').split():
-        if not Language.objects.filter(language=lang):
-            Language.objects.create(language=lang)
+        if not Languages.objects.filter(language=lang):
+            Languages.objects.create(language=lang)
 
     if not Game.objects.filter(game_name=data[1]):
         # Add data to non-m2m fields
@@ -39,9 +39,9 @@ def add_game(data):
             game.release_date=datetime.datetime.strptime(data[8], '%y.%m.%d')
         # Add data to m2m fields
         for g in data[7].replace(',', '').split():
-            game.genre.add(Genre.objects.get(genre_name=g))
+            game.genre.add(Genres.objects.get(genre_name=g))
         for l in data[12].replace(',', '').split():
-            game.game_language.add(Language.objects.get(language=l))
+            game.game_language.add(Languages.objects.get(language=l))
         game.save()
     return
 
