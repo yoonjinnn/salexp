@@ -4,6 +4,9 @@ from django.shortcuts import get_object_or_404
 import sqlite3
 from django.http import HttpResponse
 import datetime
+from django.urls import reverse_lazy
+from django.views import generic
+from django.contrib.auth.forms import UserCreationForm
 
 
 def add_game(data):
@@ -62,16 +65,22 @@ def input_data():
 
 def get_game_list(request):
     # initial setting - read DB if data not exists
-    games = Game.objects.first()
-    if not games:
+    if not Game.objects.first():
         input_data()
-
     latest_game_list = Game.objects.order_by('-discount_enddate')
     context = {'games': latest_game_list}
     return render(request, 'sites/gamelist.html', context)
 
 
 def get_game_detail(request, game_id):
+    # initial setting - read DB if data not exists
+    if not Game.objects.first():
+        input_data()
     game = get_object_or_404(Game, pk=game_id)
     return render(request, 'sites/detail.html', {'game':game.__dict__})
 
+
+class SignupView(generic.CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy('user-list')
+    template_name = 'sites/signup.html'

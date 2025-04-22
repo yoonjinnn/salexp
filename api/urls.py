@@ -8,4 +8,5 @@ urlpatterns = [
     path('languages/', LanguageList.as_view(), name='language-list'),
     path('api-auth/', include("rest_framework.urls")),
     path('register/', RegisterUser.as_view()),
+    path('users/', UserList.as_view(), name='user-list'),
 ]

@@ -40,6 +40,6 @@ class GameAdmin(admin.ModelAdmin):
         ('할인종료일', {'fields': ['discount_enddate']}),
     ]
     inlines = (GenreInline, LanguageInline,)
-    list_display = ('get_title', 'original_price', 'discount_price', 'get_discount_percentage', 'get_genres', 'is_on_sale', 'get_discount_term', 'maker', 'get_languages')
+    list_display = ('id', 'get_name', 'original_price', 'discount_price', 'get_discount_percentage', 'get_genres', 'is_on_sale', 'get_discount_term', 'maker', 'get_languages')
     list_filter = ['maker', 'discount_enddate']
     search_fields = ['game_name']

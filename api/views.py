@@ -10,7 +10,7 @@ from .permissions import *
 class GameList(generics.ListCreateAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
     def perform_create(self, serializer):
         serializer.save()
 
@@ -18,7 +18,7 @@ class GameList(generics.ListCreateAPIView):
 class GameDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
 
 class GenreList(generics.ListAPIView):
@@ -33,3 +33,7 @@ class LanguageList(generics.ListAPIView):
 
 class RegisterUser(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

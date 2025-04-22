@@ -45,3 +45,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         # User 내에 username의 중복확인 코드가 들어가 있음
         model = User
         fields = ['username', 'password', 'password2']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    # questions = serializers.SlugRelatedField(many=True, read_only=True, slug_field='pub_date')
+    questions = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='question-detail')
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'questions']

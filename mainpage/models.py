@@ -69,7 +69,8 @@ class Game(models.Model):
     def was_published_recently(self):
         return self.release_date >= timezone.now() - datetime.timedelta(days=3)
 
-    def get_title(self):
+    @admin.display(description='게임 타이틀')
+    def get_name(self):
         last_badge, sale_badge, new_badge = "", "", ""
         if self.is_on_sale():
             sale_badge = "<Sale>"
