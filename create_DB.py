@@ -19,6 +19,7 @@ cur.execute('''
         game_language TEXT,
         game_image_url TEXT,
         game_url TEXT,
+        collect_date TEXT,
         UNIQUE(game_name, product_type)
         )
     ''')
