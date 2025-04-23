@@ -132,53 +132,108 @@ else:
 
 
 ######chart######
-game_name = game['게임이름']
-product_type = game['상품유형']
-genre_list = game['장르']
-chart_df=df
-for g in genre_list:
-    g = str(g)
-    g = g.replace('[','').replace("'",'').replace(']','')
-    # for str
-    #mean = df[df['장르'].str.contains(g)].groupby('수집일')['할인가'].mean().reset_index()
-    mean = df[df['장르'].str.contains(g, na=False)].groupby('수집일')['할인가'].mean().reset_index()
-    mean.rename(columns={'할인가': f'{g}_mean'}, inplace=True)
-    chart_df = pd.merge(chart_df, mean, on='수집일', how='left')
-                            
-temp_df = chart_df[(chart_df['게임이름'] == game_name) & (chart_df['상품유형'] == product_type)].sort_values(by='수집일')
-price_df = temp_df.drop(columns=['게임이름', '할인시작일', '할인종료일', '장르', '발매일', '메이커', '플레이인원', '상품유형', '언어', '이미지', '링크'])
-price_df['수집일'] = pd.to_datetime(price_df['수집일']).dt.date.astype(str)
-price_df.set_index('수집일', inplace=True)
+###새로 수정한 차트 그래프###
 
-price_df['max_price'] = price_df['할인가'].max()
-price_df['min_price'] = price_df['할인가'].min()
-max_price = price_df['할인가'].max().astype(str)
-min_price = price_df['할인가'].min().astype(str)
+# 필요한 데이터만 추출
+price_df = df[df['게임이름'] == game['게임이름']].copy()
+price_df['수집일'] = pd.to_datetime(price_df['수집일']).dt.strftime('%Y-%m-%d')
+price_df = price_df[['수집일', '할인가']]  # 불필요한 컬럼 제거
 
-# Streamlit에서 라인 차트를 그리기
-price_df = price_df.drop(columns=['할인율'])
-st.title("price graph")
-st.line_chart(price_df)
+# 최고가 / 최저가 계산
+max_price = game['정가']
+min_price = price_df['할인가'].min()
 
-plot_df = price_df.reset_index().melt(id_vars='수집일', 
-                                      value_vars=['할인가', 'max_price', 'min_price'],
-                                      var_name='type', value_name='price')
+# 기준선 컬럼 추가
+price_df['최고가'] = max_price
+price_df['최저가'] = min_price
 
-# Altair 차트 생성
+# Altair 시각화를 위한 long-form 데이터로 변환
+plot_df = price_df.melt(id_vars='수집일',
+                        value_vars=['할인가', '최고가', '최저가'],
+                        var_name='type',
+                        value_name='price')
+# 차트 그리기
 chart = alt.Chart(plot_df).mark_line().encode(
-    x=alt.X('수집일:T', axis=alt.Axis(format='%Y-%m-%d', labelAngle=0)),
+    x=alt.X('수집일:N', axis=alt.Axis(title='수집일', labelAngle=0)),
     y=alt.Y('price:Q', scale=alt.Scale(zero=False)),
-    color=alt.Color('type:N', legend=alt.Legend(orient='bottom', title="")),
+    color=alt.Color('type:N', legend=alt.Legend(title="")),
     strokeDash=alt.condition(
-        alt.datum.type == 'discount_price',
-        alt.value([1, 0]),  # 실선
-        alt.value([4, 4])   # 점선 
+        alt.datum.type == '할인가',  # 실선 조건
+        alt.value([1, 0]),
+        alt.value([4, 4])
     )
 ).properties(
-    title="price graph"
+    title="할인가 추이 (최고가/최저가 포함)",
+    height=500  # 하단 여백 확보
 )
 
-st.altair_chart(chart, use_container_width=True)
+# 라벨 데이터프레임
+label_data = pd.DataFrame({
+    '수집일': [price_df['수집일'].iloc[-1]] * 2,  # 가장 마지막 날짜 기준 위치
+    'price': [game['정가'], price_df['할인가'].min()],
+    'label': [f"최고가: {game['정가']:,}원", f"최저가: {price_df['할인가'].min():,}원"]
+})
+
+# 기준선 텍스트 마크
+labels = alt.Chart(label_data).mark_text(
+    align='left', dx=5, dy=-5, fontSize=12, color='gray'
+).encode(
+    x='수집일:N',
+    y='price:Q',
+    text='label:N'
+)
+
+st.markdown("### 📊 가격 추이")
+final_chart = chart + labels
+st.altair_chart(final_chart, use_container_width=True)
+
+# game_name = game['게임이름']
+# product_type = game['상품유형']
+# genre_list = game['장르']
+# chart_df=df
+# for g in genre_list:
+#     g = str(g)
+#     g = g.replace('[','').replace("'",'').replace(']','')
+#     # for str
+#     #mean = df[df['장르'].str.contains(g)].groupby('수집일')['할인가'].mean().reset_index()
+#     mean = df[df['장르'].str.contains(g, na=False)].groupby('수집일')['할인가'].mean().reset_index()
+#     mean.rename(columns={'할인가': f'{g}_mean'}, inplace=True)
+#     chart_df = pd.merge(chart_df, mean, on='수집일', how='left')
+                            
+# temp_df = chart_df[(chart_df['게임이름'] == game_name) & (chart_df['상품유형'] == product_type)].sort_values(by='수집일')
+# price_df = temp_df.drop(columns=['게임이름', '할인시작일', '할인종료일', '장르', '발매일', '메이커', '플레이인원', '상품유형', '언어', '이미지', '링크'])
+# price_df['수집일'] = pd.to_datetime(price_df['수집일']).dt.date.astype(str)
+# price_df.set_index('수집일', inplace=True)
+
+# price_df['max_price'] = price_df['할인가'].max()
+# price_df['min_price'] = price_df['할인가'].min()
+# max_price = price_df['할인가'].max().astype(str)
+# min_price = price_df['할인가'].min().astype(str)
+
+# # Streamlit에서 라인 차트를 그리기
+# price_df = price_df.drop(columns=['할인율'])
+# st.title("price graph")
+# st.line_chart(price_df)
+
+# plot_df = price_df.reset_index().melt(id_vars='수집일', 
+#                                       value_vars=['할인가', 'max_price', 'min_price'],
+#                                       var_name='type', value_name='price')
+
+# # Altair 차트 생성
+# chart = alt.Chart(plot_df).mark_line().encode(
+#     x=alt.X('수집일:T', axis=alt.Axis(format='%Y-%m-%d', labelAngle=0)),
+#     y=alt.Y('price:Q', scale=alt.Scale(zero=False)),
+#     color=alt.Color('type:N', legend=alt.Legend(orient='bottom', title="")),
+#     strokeDash=alt.condition(
+#         alt.datum.type == 'discount_price',
+#         alt.value([1, 0]),  # 실선
+#         alt.value([4, 4])   # 점선 
+#     )
+# ).properties(
+#     title="price graph"
+# )
+
+# st.altair_chart(chart, use_container_width=True)
 
 #price_data = pd.DataFrame({
 #    '날짜': pd.date_range(end=datetime.datetime.today(), periods=10),
