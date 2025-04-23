@@ -24,10 +24,10 @@ def load_data_from_sqlite(db_path="mainDB.db"):
             "genre": "장르",
             "release_date": "발매일",
             "maker": "메이커",
-            "play_number": "플레이인원",
+            "player_number": "플레이인원",
             "product_type": "상품유형",
             "game_language": "언어",
-            "game_img_url": "이미지",
+            "game_image_url": "이미지",
             "game_url": "링크",
             "collect_date": "수집일"
         })
@@ -62,7 +62,7 @@ def load_data():
             "genre": "장르",
             "release_date": "발매일",
             "maker": "메이커",
-            "play_number": "플레이인원",
+            "player_number": "플레이인원",
             "product_type": "상품유형",
             "game_language": "언어",
             "game_image_url": "이미지",
@@ -105,17 +105,17 @@ key = game['게임이름']
 
 # 게임 상세 정보 출력
 st.title(f"🎮 {game['게임이름']} 상세 정보")
-st.image(game["이미지"], width=300)
+st.image(game['이미지'], width=300)
 st.write(f"**정가:** {game['정가']}원")
 st.write(f"**할인가:** {game['할인가']}원")
 st.write(f"**할인율:** {game['할인율']}%")
 st.write(f"**할인 기간:** {game['할인시작일']} ~ {game['할인종료일']}")
-st.write(f"**장르:** {game['장르']}")
+st.write(f"**장르:** {', '.join(game['장르'])}")
 st.write(f"**발매일:** {game['발매일']}")
 st.write(f"**메이커:** {game['메이커']}")
 st.write(f"**플레이 인원수:** {game['플레이인원']}")
 st.write(f"**상품 유형:** {game['상품유형']}")
-st.write(f"**지원 언어:** {game['언어']}")
+st.write(f"**지원 언어:** {', '.join(game['언어'])}")
 st.markdown(f"[🔗 구매 페이지 바로가기]({game['링크']})")
 
 # 즐겨찾기 토글 버튼

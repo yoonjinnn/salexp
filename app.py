@@ -23,7 +23,7 @@ def load_data():
             "genre": "장르",
             "release_date": "발매일",
             "maker": "메이커",
-            "play_number": "플레이인원",
+            "player_number": "플레이인원",
             "product_type": "상품유형",
             "game_language": "언어",
             "game_image_url": "이미지",
