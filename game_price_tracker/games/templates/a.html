@@ -1,0 +1,9 @@
+{% if games %}
+<ul>
+    {% for game in games %}
+        <li>{{game.id}} | {{game.get_name}} | {{game.get_genres}} | {{game.get_languages}}</li>
+    {% endfor %}
+<ul>
+{% else %}
+<p>no games</p>
+{% endif %}

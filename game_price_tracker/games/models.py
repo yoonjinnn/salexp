@@ -1,19 +1,39 @@
 from django.db import models
 
+
+class Genre(models.Model):
+    genre_name = models.CharField(default='', max_length=50, unique=True)
+    # class Meta:
+    #     db_table = 'genre'
+
+    def __str__(self):
+        return self.genre_name
+
+
+class Language(models.Model):
+    language = models.CharField(default='', max_length=50, unique=True)
+    # class Meta:
+    #     db_table = 'language'
+    
+    def __str__(self):
+        return self.language
+
+
 class Game(models.Model):
     game_name = models.CharField(max_length=255)
     original_price = models.FloatField()
     discount_price = models.FloatField()
-    discount_startdate = models.CharField(max_length=20, null=True, blank=True)
-    discount_enddate = models.CharField(max_length=20, null=True, blank=True)
-    genre = models.CharField(max_length=255, null=True, blank=True)
-    release_date = models.CharField(max_length=20, null=True, blank=True)
+    discount_startdate = models.DateTimeField(max_length=20, null=True, blank=True)
+    discount_enddate = models.DateTimeField(max_length=20, null=True, blank=True)
+    genre = models.ManyToManyField(Genre, through='GameGenre')
+    release_date = models.DateTimeField(max_length=20, null=True, blank=True)
     maker = models.CharField(max_length=255, null=True, blank=True)
     player_number = models.CharField(max_length=50, null=True, blank=True)
     product_type = models.CharField(max_length=100)
-    game_language = models.TextField(null=True, blank=True)
+    game_language = models.ManyToManyField(Language, through='GameLanguage')
     game_image_url = models.URLField(null=True, blank=True)
     game_url = models.URLField(null=True, blank=True)
+    collect_date=models.DateTimeField(max_length=20, null=True, blank=True)
 
     '''매핑한 변수들
     # 게임 기본 정보
@@ -52,12 +72,12 @@ class Game(models.Model):
     game_url = models.URLField()
     '''
 
-    class Meta:
-        db_table = 'game'  # 테이블 이름 수동 지정
-        managed = False    # Django가 이 테이블을 만들지 않도록 설정
+    # class Meta:
+    #     db_table = 'game'  # 테이블 이름 수동 지정
+        #managed = False    # Django가 이 테이블을 만들지 않도록 설정
 
-    def __str__(self):
-        return self.game_name
+    # def __str__(self):
+    #     return self.game_name
     
 
 # 가격 추이를 위한 클래스 선언
@@ -68,3 +88,19 @@ class PriceHistory(models.Model):
 
     def __str__(self):
         return f"{self.game.game_name} - {self.date} - {self.price}"
+    
+    
+
+# ManyToManyField에 의해 사용될 중간 테이블
+class GameGenre(models.Model):
+    class Meta:
+        db_table = 'games_genres'
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    genre = models.ForeignKey('Genre', on_delete=models.CASCADE)
+    
+
+class GameLanguage(models.Model):
+    class Meta:
+        db_table = 'games_languages'
+    game = models.ForeignKey('Game', on_delete=models.CASCADE)
+    language = models.ForeignKey('Language', on_delete=models.CASCADE)

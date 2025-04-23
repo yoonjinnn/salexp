@@ -80,8 +80,8 @@ WSGI_APPLICATION = 'game_price_tracker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'mainDB.db'),
+        'NAME': BASE_DIR / 'db.sqlite3',
+        #'NAME': BASE_DIR / 'mainDB.db',
     }
 }
 
@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "Asia/Seoul"
 
 USE_I18N = True
 
