@@ -48,9 +48,9 @@ class Command(BaseCommand):
                         'genre': row.get('genre', ''),
                         'release_date': row.get('release_date', ''),
                         'maker': row.get('maker', ''),
-                        'player_number': row.get('play_number', ''),  # play_number 주의!
+                        'player_number': row.get('player_number', ''),
                         'game_language': row.get('game_language', ''),
-                        'game_image_url': row.get('game_img_url', ''),  # CSV 컬럼명 기준!
+                        'game_image_url': row.get('game_image_url', ''),
                         'game_url': row.get('game_url', ''),
                     }
                 )
