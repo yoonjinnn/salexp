@@ -52,6 +52,7 @@ class Command(BaseCommand):
                         'game_language': row.get('game_language', ''),
                         'game_image_url': row.get('game_image_url', ''),
                         'game_url': row.get('game_url', ''),
+                        'collect_date': row.get('collect_date', ''),
                     }
                 )
 
