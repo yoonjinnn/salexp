@@ -25,7 +25,7 @@ def init_db():
     cur = conn.cursor() 
 
     cur.execute('''
-        CREATE TABLE IF NOT EXISTS test_game (
+        CREATE TABLE IF NOT EXISTS game (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             game_name TEXT NOT NULL,
             original_price REAL NOT NULL,
@@ -47,8 +47,10 @@ def init_db():
                 
     conn.commit()
     
-    cur.execute("DELETE FROM test_game")
-    conn.commit()
+    #for test
+    
+    #cur.execute("DELETE FROM test_game")
+    #conn.commit()
     
     #conn.close()
     return conn
@@ -200,7 +202,7 @@ def save_game_to_db(conn, game):
             try:
                 c = conn.cursor()
                 c.execute('''
-                    INSERT OR IGNORE INTO test_game (game_name, original_price, discount_price, discount_startdate, discount_enddate, genre, release_date, maker, player_number, product_type, game_language, game_image_url, game_url, collect_date)
+                    INSERT OR IGNORE INTO game (game_name, original_price, discount_price, discount_startdate, discount_enddate, genre, release_date, maker, player_number, product_type, game_language, game_image_url, game_url, collect_date)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (game["game_name"], game["original_price"], game["discount_price"], game["discount_startdate"], game["discount_enddate"], game["genre"], game["release_date"], game["maker"], game["player_number"], game["product_type"], game["game_language"], game["game_image_url"], game["game_url"], game["collect_date"]))
                 conn.commit()
